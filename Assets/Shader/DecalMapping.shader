@@ -1,0 +1,119 @@
+﻿//Meshに対してデカールを貼るシェーダー
+//Mesh空間の位置からUV座標を計算して、デカールテクスチャを描き込む。
+Shader "DecalMapping"
+{
+	Properties
+	{
+		//累積用テクスチャ
+		_AccumulateTexture ("AccumulateTexture", 2D) = "black" {}
+		//デカールテクスチャ
+		_DecalTexture("Decal Texture", 2D) = "black" {}
+		//デカールペイント
+		_DecalRadius("Decal Radius", Float) = 0.5
+		_DecalPositionOS("Decal Position (Object Space)", Vector) = (0, 0, 0, 0)
+		_DecalNormal("Decal Normal", Vector) = (0, 1, 0, 0)
+		_DecalTangent("Decal Tangent", Vector) = (1, 0, 0, 0)
+		_Color("Color", Color) = (0, 0, 0, 0)
+		//オブジェクト情報
+		_ObjectScale("Object Scale", Vector) = (1, 1, 1, 1)
+	}
+
+	SubShader
+	{
+		Tags{"RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "IgnoreProjector" = "True"}
+		LOD 300
+		
+		HLSLINCLUDE
+		#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+		
+		TEXTURE2D(_AccumulateTexture);
+		SAMPLER(sampler_AccumulateTexture);
+		TEXTURE2D(_DecalTexture);
+		SAMPLER(sampler_DecalTexture);
+		
+		CBUFFER_START(UnityPerMaterial)
+		float4 _AccumulateTexture_ST;
+		float4 _DecalTexture_ST;
+		float _DecalSize;
+		float3 _DecalPositionOS;
+		float3 _DecalNormal;
+		float3 _DecalTangent;
+		float4 _Color;
+		float3 _ObjectScale;
+		CBUFFER_END
+		ENDHLSL
+
+		Pass
+		{
+			Blend One Zero
+			Cull Back
+
+			HLSLPROGRAM
+			#pragma target 2.0
+			#pragma vertex ProcessVertex
+			#pragma fragment ProcessFragment
+			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+
+			struct Attributes
+			{
+				float4 positionOS : POSITION;
+				float2 texcoord : TEXCOORD0;
+				float3 normal : NORMAL;
+				UNITY_VERTEX_INPUT_INSTANCE_ID
+			};
+
+			struct Varyings
+			{
+				float4 positionCS : SV_POSITION; //ClipSpace座標
+				float2 texcoord : TEXCOORD0; //UV座標
+				float3 positionOS : TEXCOORD1; //ObjectSpace座標
+				half3 normalOS : TEXCOORD2;
+			};
+
+			Varyings ProcessVertex(Attributes input)
+			{
+				UNITY_SETUP_INSTANCE_ID(v);
+				Varyings output = (Varyings)0;
+
+				//UV座標をそのままClip空間として表示
+				output.positionCS = float4(input.texcoord.xy * 2 - 1, 0, 1);
+				output.positionCS.y *= _ProjectionParams.x;
+
+				//計算をObject空間で行うため、Object空間の法線と座標を渡す
+				output.texcoord = TRANSFORM_TEX(input.texcoord, _AccumulateTexture);
+				output.normalOS = input.normal;
+				output.positionOS = input.positionOS.xyz;
+				return output;
+			}
+
+			half4 ProcessFragment(Varyings input) : SV_Target
+			{
+				const half3 normal = normalize(input.normalOS);
+				half3 decalNormal = normalize(_DecalNormal);
+				half3 decalTangent = normalize(_DecalTangent);
+				half3 decalBitangent = normalize(cross(decalTangent, decalNormal));
+				decalTangent = normalize(cross(decalNormal, decalBitangent));
+							
+				//平面から描画座標のベクトルを求め平面への正射影ベクトルを求める
+				const half3 decalCenterToPositionVector = (input.positionOS - _DecalPositionOS) * _ObjectScale;
+				const float2 positionOnPlane = float2(dot(decalTangent, decalCenterToPositionVector), dot(decalBitangent, decalCenterToPositionVector));
+		
+				//平面に投影した座標を平面のUV座標に変換する
+				const half2 unclampedUv = (positionOnPlane / _DecalSize) + 0.5; //0~1空間に正規化するが範囲外の場合もあるのでClampしない。0~1なら平面内。
+				const half sameDirectionMask = step(0.2, dot(normal, decalNormal)); //Decalと同じ向きなら1,逆なら0
+				const half decalAreaMask = int(0 <= unclampedUv.x && unclampedUv.x <= 1 && 0 <= unclampedUv.y && unclampedUv.y <= 1); //平面内なら1, 平面外なら0 
+				const half2 uv = unclampedUv * sameDirectionMask * decalAreaMask;
+				
+				//UV座標のDecalTextureの色をフェッチする
+				half4 decalColor = SAMPLE_TEXTURE2D(_DecalTexture, sampler_DecalTexture, TRANSFORM_TEX(uv, _DecalTexture));
+				decalColor.xyz *= _Color.xyz * decalColor.xyz * decalColor.w;
+				
+				//累積テクスチャに重ねて描画する
+				const half4 acc = SAMPLE_TEXTURE2D(_AccumulateTexture, sampler_AccumulateTexture, input.texcoord);
+				return half4(lerp(acc.xyz, decalColor.xyz, decalColor.w), acc.w);
+			}
+			ENDHLSL
+		}
+	}
+}
