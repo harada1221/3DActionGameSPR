@@ -37,10 +37,9 @@ public class PlayerScript : MonoBehaviour
     private float _diverSpeed = 30;
     [SerializeField, Header("潜り状態の移動スピード")]
     private float _crouchSpeed = 5f;
-
     //銃スクリプト
     private GunScript _gunScript = default;
-    //
+    //爆弾のスクリプト
     private BombControlScript _bombControlScript = default;
     //インクタンクのスクリプト
     private TankScript _tankScript = default;

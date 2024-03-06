@@ -59,31 +59,16 @@ public class Painteble : MonoBehaviour
         Vector3 positionOS = transform.InverseTransformPoint(worldPosition);
         Vector3 normalOS = transform.InverseTransformDirection(normal);
         Vector3 tangentOS = transform.InverseTransformDirection(tangent);
-        try
-        {
-            _decalPainter.SetPointer(
-                 positionOS,
-                 normalOS,
-                 tangentOS,
-                 decalSize,
-                 color,
-                 transform.lossyScale
-                );
-        }
-        catch
-        {
-            this.GetComponent<Renderer>().material.color = Color.black;
-        }
-
-        try
-        {
-            //更新座標にデカールの貼り付け
-            _decalPainter.Paint();
-        }
-        catch
-        {
-            this.GetComponent<Renderer>().material.color = Color.green;
-        }
+        _decalPainter.SetPointer(
+             positionOS,
+             normalOS,
+             tangentOS,
+             decalSize,
+             color,
+             transform.lossyScale
+            );
+        //更新座標にデカールの貼り付け
+        _decalPainter.Paint();
     }
 }
 
