@@ -119,10 +119,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d55e00e5b4938bb468ddc6a6a07af5e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 30
+  _speed: 20
   _foolSpeed: 10
   _paintColor: {r: 1, g: 0, b: 0, a: 1}
   _size: 2
+  _tiltSpeed: 6
 --- !u!54 &2871910716394358595
 Rigidbody:
   m_ObjectHideFlags: 0

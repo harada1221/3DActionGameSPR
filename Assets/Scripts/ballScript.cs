@@ -19,6 +19,8 @@ public class BallScript : MonoBehaviour
     private Color _paintColor = Color.red;
     [SerializeField, Header("塗りの大きさ")]
     private float _size = 1f;
+    [SerializeField, Header("傾く速度")]
+    private float _tiltSpeed = 3f;
     //射撃の向き
     private Vector3 _shootVelocity = default;
     //射撃位置
@@ -88,8 +90,8 @@ public class BallScript : MonoBehaviour
     private void FoolMove()
     {
         isAngle = true;
-        //下に落とす
-        _shootVelocity = Vector3.down;
+        //_shootVelocity を少しずつ変更する
+        _shootVelocity = Vector3.Lerp(_shootVelocity, Vector3.down, Time.deltaTime * _tiltSpeed);
         transform.position += _shootVelocity * Time.deltaTime * _foolSpeed;
     }
     private void OnCollisionEnter(Collision collision)
@@ -121,4 +123,3 @@ public class BallScript : MonoBehaviour
 
     }
 }
-

@@ -339,7 +339,6 @@ public class PlayerScript : MonoBehaviour
         Vector3 moveDirection = default;
         if (Physics.Raycast(transform.position, transform.forward, out hit, _rayDistance * 2))
         {
-            Debug.Log("hit");
             //ジャンプ情報初期化
             isJump = false;
             _timer = 0;
