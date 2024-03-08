@@ -103,7 +103,7 @@ public class PlayerScript : MonoBehaviour
             _tankScript.InkRecovery(_playerStatus);
         }
         //初期いちに戻す￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥カリオペ
-        if (transform.position.y < -1)
+        if (transform.position.y < -3)
         {
             transform.position = Vector3.zero;
             _mainCamera.transform.position = new Vector3(0f, 2.4f, -4f);
@@ -239,12 +239,13 @@ public class PlayerScript : MonoBehaviour
             //射撃終了
             isShoot = false;
         }
-        if (Input.GetButton(_rb))
-        {
-            Debug.Log("in");
-        }
+        //ボム投げ
         if (Input.GetButtonUp(_rb))
         {
+            //通常状態にする
+            this.transform.localScale = Vector3.one;
+            //カメラの向き調整
+            CameraRevolution();
             _bombControlScript.Bombistic();
         }
     }
@@ -355,7 +356,7 @@ public class PlayerScript : MonoBehaviour
             else
             {
                 //位置調整￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥仮置き
-                moveDirection = Vector3.up * 10;
+                moveDirection = Vector3.up * 15;
             }
 
         }

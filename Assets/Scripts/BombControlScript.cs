@@ -75,7 +75,6 @@ public class BombControlScript : MonoBehaviour
         _finalDestination = _mainCamera.transform.forward;
         //発射位置に移動
         bombScript.transform.position = _shootPosition.transform.position;
-        Debug.Log(bombScript.transform.position);
         //方向を決定
         bombScript.SetVelocity(_finalDestination);
         //インクタンク減少
