@@ -27,6 +27,8 @@ public class BallScript : MonoBehaviour
     private Vector3 _nowShotPosition = default;
     //銃のスクリプト
     private GunScript _gunScript = default;
+    //
+    private SplashControlScript _splashControlScript = default;
     //射程の最高地点に到達したか
     private bool isAngle = default;
     #endregion
@@ -37,6 +39,8 @@ public class BallScript : MonoBehaviour
     {
         //銃のスクリプト
         _gunScript = GameObject.FindWithTag("Player").GetComponent<GunScript>();
+        //
+        _splashControlScript = GameObject.FindWithTag("Player").GetComponent<SplashControlScript>();
     }
 
     /// <summary>
@@ -104,6 +108,7 @@ public class BallScript : MonoBehaviour
             Vector3 normal = contact.normal;
             Vector3 hitPosition = contact.point;
             Vector3 tangent = Vector3.Cross(normal, Vector3.right).normalized;
+            _splashControlScript.StartEffects(hitPosition, normal);
             if (tangent.sqrMagnitude < 0.01f)
             {
                 tangent = Vector3.Cross(normal, Vector3.forward).normalized;
@@ -119,6 +124,7 @@ public class BallScript : MonoBehaviour
                 );
             //弾回収
             HideFromStage();
+
         }
 
     }

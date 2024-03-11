@@ -124,6 +124,7 @@ MonoBehaviour:
   _paintColor: {r: 1, g: 0, b: 0, a: 1}
   _size: 2
   _tiltSpeed: 6
+  _particleSystem: {fileID: 0}
 --- !u!54 &2871910716394358595
 Rigidbody:
   m_ObjectHideFlags: 0
