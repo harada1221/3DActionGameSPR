@@ -53,7 +53,7 @@ public class BombControlScript : MonoBehaviour
     public void Bombistic()
     {
         //消費量以上ならリターン
-        if (_tankScript.GetNowCapacity < _tankdecrease)
+        if (_tankScript.GetLimitOver == true | _tankScript.GetNowCapacity <= _tankdecrease)
         {
             return;
         }

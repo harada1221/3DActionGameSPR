@@ -39,6 +39,11 @@ public class SplashControlScript : MonoBehaviour
             Splash.gameObject.SetActive(false);
         }
     }
+    /// <summary>
+    /// エフェクトを発生させる
+    /// </summary>
+    /// <param name="position">発生位置</param>
+    /// <param name="rotation">発生向き</param>
     public void StartEffects(Vector3 position, Vector3 rotation)
     {
         //Queueの中になかったら生成
@@ -58,6 +63,10 @@ public class SplashControlScript : MonoBehaviour
         //エフェクト開始
         ballScript.StrartSplash(position, rotation);
     }
+    /// <summary>
+    /// オブジェクト回収
+    /// </summary>
+    /// <param name="splashPartical">エフェクト表示スクリプト</param>
     public void SplashCollect(SplashParticalScript splashPartical)
     {
         //弾のゲームオブジェクトを非表示

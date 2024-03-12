@@ -104,24 +104,27 @@ public class BallScript : MonoBehaviour
         {
             //当たった場所を取得
             Painteble paintable = collision.gameObject.GetComponent<Painteble>();
-            ContactPoint contact = collision.GetContact(0);
-            Vector3 normal = contact.normal;
-            Vector3 hitPosition = contact.point;
-            Vector3 tangent = Vector3.Cross(normal, Vector3.right).normalized;
-            _splashControlScript.StartEffects(hitPosition, normal);
-            if (tangent.sqrMagnitude < 0.01f)
+            if(paintable != null)
             {
-                tangent = Vector3.Cross(normal, Vector3.forward).normalized;
+                ContactPoint contact = collision.GetContact(0);
+                Vector3 normal = contact.normal;
+                Vector3 hitPosition = contact.point;
+                Vector3 tangent = Vector3.Cross(normal, Vector3.right).normalized;
+                _splashControlScript.StartEffects(hitPosition, normal);
+                if (tangent.sqrMagnitude < 0.01f)
+                {
+                    tangent = Vector3.Cross(normal, Vector3.forward).normalized;
+                }
+                //テクスチャを更新
+                paintable.Paint
+                    (
+                    hitPosition,
+                    normal,
+                    tangent,
+                    _size,
+                     _paintColor
+                    );
             }
-            //テクスチャを更新
-            paintable.Paint
-                (
-                hitPosition,
-                normal,
-                tangent,
-                _size,
-                 _paintColor
-                );
             //弾回収
             HideFromStage();
 

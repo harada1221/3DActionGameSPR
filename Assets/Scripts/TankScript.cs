@@ -25,13 +25,18 @@ public class TankScript : MonoBehaviour
     private Slider _inkTank = default;
     [SerializeField, Header("大きさを変更するオブジェクト")]
     private GameObject _tankObj = default;
+    [SerializeField, Header("インク不足UI")]
+    private Image _inkLmit = default;
     //現在のインク量
     private float _nowCapacity = default;
     //初期のタンクの大きさ
     private Vector3 _baseScale = default;
+    //
+    private bool isLomitOver = false;
 
     #endregion
     public float GetNowCapacity { get => _nowCapacity; }
+    public bool GetLimitOver { get => isLomitOver; }
     /// <summary>
     /// 更新前処理
     /// </summary>
@@ -50,10 +55,15 @@ public class TankScript : MonoBehaviour
     /// <param name="reduction">減少量</param>
     public void Inkdecrease(float reduction)
     {
+        //残量が0以下か
         if (_nowCapacity <= 0)
         {
+            //容量変更
             _nowCapacity = 0;
             _inkTank.value = _nowCapacity;
+            isLomitOver = true;
+            //UI表示
+            _inkLmit.gameObject.SetActive(true);
             return;
         }
         //タンク減少
@@ -110,7 +120,13 @@ public class TankScript : MonoBehaviour
         _inkTank.value = _nowCapacity;
         //オブジェクトの大きさ変更
         _baseScale.y = _nowCapacity / _maxCapacity;
+        if (_baseScale.y < 0)
+        {
+            _baseScale.y = 0;
+        }
         _tankObj.transform.localScale = _baseScale;
+        isLomitOver = false;
+        _inkLmit.gameObject.SetActive(false);
     }
 }
 

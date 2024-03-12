@@ -57,6 +57,10 @@ public class PlayerScript : MonoBehaviour
     private PlayerStatus _playerStatus = PlayerStatus.Idle;
     //プレイヤーの移動方向
     private Vector3 _playerMoveDirection = default;
+    //
+    private Vector3 _firstPlayerPosition = default;
+    //
+    private Vector3 _firstcameraPosition = default;
 
     //入力の名前
     private const string _horizontal = "Horizontal";
@@ -89,6 +93,10 @@ public class PlayerScript : MonoBehaviour
         _gunScript = GetComponent<GunScript>();
         //ボムの管理スクリプト
         _bombControlScript = GetComponent<BombControlScript>();
+        //
+        _firstPlayerPosition = transform.position;
+        //
+        _firstcameraPosition = _mainCamera.transform.position;
     }
 
     /// <summary>
@@ -105,8 +113,8 @@ public class PlayerScript : MonoBehaviour
         //初期いちに戻す￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥カリオペ
         if (transform.position.y < -3)
         {
-            transform.position = Vector3.zero;
-            _mainCamera.transform.position = new Vector3(0f, 2.4f, -4f);
+            transform.position = _firstPlayerPosition;
+            _mainCamera.transform.position = _firstcameraPosition;
             _mainCamera.transform.rotation = Quaternion.Euler(2, 0, 0);
         }
         //スティックのX,Y軸がどれほど移動したか
@@ -338,7 +346,7 @@ public class PlayerScript : MonoBehaviour
         this.transform.localScale = Vector3.zero;
         RaycastHit hit;
         Vector3 moveDirection = default;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, _rayDistance * 2))
+        if (Physics.Raycast(transform.position + new Vector3(0, -0.3f, 0), transform.forward, out hit, _rayDistance * 2))
         {
             //ジャンプ情報初期化
             isJump = false;
@@ -361,7 +369,7 @@ public class PlayerScript : MonoBehaviour
 
         }
         //床に当たっていて下入力されているか
-        if (Physics.Raycast(transform.position, Vector3.down, _rayDistance) && MoveZ <= 0)
+        if (Physics.Raycast(transform.position+ new Vector3(0, -0.3f, 0), Vector3.down, _rayDistance) && MoveZ <= 0)
         {
             //ステータス変更
             _playerStatus = PlayerStatus.Crouch;
