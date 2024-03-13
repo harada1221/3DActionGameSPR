@@ -39,7 +39,7 @@ public class BallScript : MonoBehaviour
     {
         //銃のスクリプト
         _gunScript = GameObject.FindWithTag("Player").GetComponent<GunScript>();
-        //
+        //エフェクトのスクリプト
         _splashControlScript = GameObject.FindWithTag("Player").GetComponent<SplashControlScript>();
     }
 

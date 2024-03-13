@@ -57,10 +57,12 @@ public class PlayerScript : MonoBehaviour
     private PlayerStatus _playerStatus = PlayerStatus.Idle;
     //プレイヤーの移動方向
     private Vector3 _playerMoveDirection = default;
+    //プレイヤーのリスポーン位置
+    private Vector3 _respawnPlayerPosition = default;
+    //カメラのリスポーン位置
+    private Vector3 _respawnCameraPosition = default;
     //
-    private Vector3 _firstPlayerPosition = default;
-    //
-    private Vector3 _firstcameraPosition = default;
+    private Vector3 _respwnCameraRotation = default;
 
     //入力の名前
     private const string _horizontal = "Horizontal";
@@ -93,10 +95,12 @@ public class PlayerScript : MonoBehaviour
         _gunScript = GetComponent<GunScript>();
         //ボムの管理スクリプト
         _bombControlScript = GetComponent<BombControlScript>();
+        //プレイヤーリスポーンの初期位置
+        _respawnPlayerPosition = transform.position;
+        //カメラのリスポーン初期位置
+        _respawnCameraPosition = _respawnPlayerPosition + (_mainCamera.transform.position - transform.position);
         //
-        _firstPlayerPosition = transform.position;
-        //
-        _firstcameraPosition = _mainCamera.transform.position;
+        _respwnCameraRotation = _mainCamera.transform.localEulerAngles;
     }
 
     /// <summary>
@@ -110,12 +114,12 @@ public class PlayerScript : MonoBehaviour
             //インク回復
             _tankScript.InkRecovery(_playerStatus);
         }
-        //初期いちに戻す￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥カリオペ
+        //リスポーン
         if (transform.position.y < -3)
         {
-            transform.position = _firstPlayerPosition;
-            _mainCamera.transform.position = _firstcameraPosition;
-            _mainCamera.transform.rotation = Quaternion.Euler(2, 0, 0);
+            transform.position = _respawnPlayerPosition;
+            _mainCamera.transform.position = _respawnCameraPosition;
+            _mainCamera.transform.rotation = Quaternion.Euler(_respwnCameraRotation);
         }
         //スティックのX,Y軸がどれほど移動したか
         float X_Move = Input.GetAxisRaw(_horizontal);
@@ -123,7 +127,6 @@ public class PlayerScript : MonoBehaviour
         //コントローラーのR.Lトリガー
         float R_Trigger = Input.GetAxisRaw(_shot);
         float L_Trigger = Input.GetAxisRaw(_crouch);
-        Debug.Log(_playerStatus);
         //移動
         switch (_playerStatus)
         {
@@ -206,7 +209,7 @@ public class PlayerScript : MonoBehaviour
                 //大きさ変更
                 this.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
                 //壁に当たっているか
-                if (Physics.Raycast(transform.position + Vector3.up, transform.forward * 2, out hit, _rayDistance))
+                if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out hit, _rayDistance * 2))
                 {
                     //自分の色に触れているか
                     ColorCheck(hit);
@@ -369,7 +372,7 @@ public class PlayerScript : MonoBehaviour
 
         }
         //床に当たっていて下入力されているか
-        if (Physics.Raycast(transform.position+ new Vector3(0, -0.3f, 0), Vector3.down, _rayDistance) && MoveZ <= 0)
+        if (Physics.Raycast(transform.position + new Vector3(0, -0.3f, 0), Vector3.down, _rayDistance) && MoveZ <= 0)
         {
             //ステータス変更
             _playerStatus = PlayerStatus.Crouch;
@@ -447,5 +450,16 @@ public class PlayerScript : MonoBehaviour
         {
             isMyColor = false;
         }
+    }
+    /// <summary>
+    /// リスポーン地点変更
+    /// </summary>
+    /// <param name="respawnPosition">リスポーン位置</param>
+    public void ChangeRespawnPosition(Vector3 respawnPosition)
+    {
+        //プレイヤーリスポーンの変更位置
+        _respawnPlayerPosition = respawnPosition;
+        //カメラのリスポーン変更位置
+        _respawnCameraPosition = _respawnPlayerPosition + new Vector3(0f, 2.5f, -4f);
     }
 }
