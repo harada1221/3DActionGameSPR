@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7412829867884126351}
   - component: {fileID: 7805617073884294084}
   - component: {fileID: 8509326418235245278}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 5417164419653404210}
   - component: {fileID: 9056646369972237330}
   - component: {fileID: 909599609498298801}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RespwnPosition
   m_TagString: RespwnPosition
   m_Icon: {fileID: 0}
@@ -224,4 +224,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f180741d628145143b7472ee78dcf2e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraAngle: {x: 2, y: 90, z: 0}

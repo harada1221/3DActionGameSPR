@@ -37,6 +37,8 @@ public class PlayerScript : MonoBehaviour
     private float _diverSpeed = 30;
     [SerializeField, Header("潜り状態の移動スピード")]
     private float _crouchSpeed = 5f;
+    [SerializeField, Header("壁のレイヤー")]
+    private LayerMask _targetLayer = default;
     //銃スクリプト
     private GunScript _gunScript = default;
     //爆弾のスクリプト
@@ -83,6 +85,7 @@ public class PlayerScript : MonoBehaviour
     }
     #region プロパティ
     public bool GetShoot { get => isShoot; }
+    public PlayerStatus GetNowStatus { get => _playerStatus; }
     #endregion
     /// <summary>
     /// 初期化処理
@@ -112,24 +115,23 @@ public class PlayerScript : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        //スティックのX,Z軸がどれほど移動したか
+        float X_Move = Input.GetAxisRaw(_horizontal);
+        float Z_Move = Input.GetAxisRaw(_vertical);
+        //コントローラーのR.Lトリガー
+        float R_Trigger = Input.GetAxisRaw(_shot);
+        float L_Trigger = Input.GetAxisRaw(_crouch);
         //射撃中か
         if (isShoot == false)
         {
             //インク回復
             _tankScript.InkRecovery(_playerStatus);
         }
-        Debug.Log(_playerStatus);
         //リスポーン
         if (transform.position.y < -3 || _hpScript.GetNowHp <= 0)
         {
             ReSpawn();
         }
-        //スティックのX,Y軸がどれほど移動したか
-        float X_Move = Input.GetAxisRaw(_horizontal);
-        float Z_Move = Input.GetAxisRaw(_vertical);
-        //コントローラーのR.Lトリガー
-        float R_Trigger = Input.GetAxisRaw(_shot);
-        float L_Trigger = Input.GetAxisRaw(_crouch);
         //移動
         switch (_playerStatus)
         {
@@ -177,7 +179,7 @@ public class PlayerScript : MonoBehaviour
         }
         RaycastHit hit;
         //着地
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, _rayDistance))
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, _rayDistance, _targetLayer))
         {
             //自分の色の上にいるか
             ColorCheck(hit);
@@ -212,7 +214,7 @@ public class PlayerScript : MonoBehaviour
                 //大きさ変更
                 this.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
                 //壁に当たっているか
-                if (Physics.Raycast(transform.position, transform.forward, out hit, _rayDistance))
+                if (Physics.Raycast(transform.position, transform.forward, out hit, _rayDistance,_targetLayer))
                 {
                     //自分の色に触れているか
                     ColorCheck(hit);
@@ -288,7 +290,7 @@ public class PlayerScript : MonoBehaviour
         }
 
         //ぶつかっているか
-        if (!Physics.Raycast(transform.position, moveDirection, _rayDistance))
+        if (!Physics.Raycast(transform.position, moveDirection, _rayDistance, _targetLayer))
         {
             //移動させる
             transform.position += moveDirection * _speed * Time.deltaTime;
@@ -327,7 +329,7 @@ public class PlayerScript : MonoBehaviour
             transform.rotation = newRotation;
         }
         //壁に当たっているか
-        if (!Physics.Raycast(transform.position, _playerMoveDirection, _rayDistance * 2))
+        if (!Physics.Raycast(transform.position, _playerMoveDirection, _rayDistance * 2, _targetLayer))
         {
             //移動させる
             transform.position += _playerMoveDirection * _crouchSpeed * Time.deltaTime;
@@ -352,7 +354,7 @@ public class PlayerScript : MonoBehaviour
         this.transform.localScale = Vector3.zero;
         RaycastHit hit;
         Vector3 moveDirection = default;
-        if (Physics.Raycast(transform.position + new Vector3(0, -0.3f, 0), transform.forward, out hit, _rayDistance * 2))
+        if (Physics.Raycast(transform.position + new Vector3(0, -0.4f, 0), transform.forward, out hit, _rayDistance * 2, _targetLayer))
         {
             //ジャンプ情報初期化
             isJump = false;
@@ -375,13 +377,13 @@ public class PlayerScript : MonoBehaviour
 
         }
         //床に当たっていて下入力されているか
-        if (Physics.Raycast(transform.position + new Vector3(0, -0.3f, 0), Vector3.down, _rayDistance) && MoveZ <= 0)
+        if (Physics.Raycast(transform.position + new Vector3(0, -0.3f, 0), Vector3.down, _rayDistance, _targetLayer) && MoveZ <= 0)
         {
             //ステータス変更
             _playerStatus = PlayerStatus.Crouch;
         }
         //動く先に壁がある場合は上下のみ
-        if (Physics.Raycast(transform.position, moveDirection, _rayDistance))
+        if (Physics.Raycast(transform.position, moveDirection, _rayDistance, _targetLayer))
         {
             moveDirection.x = 0;
             moveDirection.z = 0;

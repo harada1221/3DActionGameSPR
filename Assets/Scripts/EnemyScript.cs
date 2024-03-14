@@ -99,8 +99,8 @@ public class EnemyScript : MonoBehaviour
         //プレイヤーとの間にレイキャストを飛ばし、障害物がなければ true を返す
         RaycastHit hit;
         _playerVelocity = _playerPosition.position - transform.position;
-        Debug.DrawRay(transform.position, _playerVelocity.normalized * _sightRange, Color.red);
-        if (Physics.Raycast(transform.position, _playerVelocity.normalized, out hit, _sightRange))
+        Debug.DrawRay(transform.position + Vector3.up, _playerVelocity.normalized * _sightRange, Color.red);
+        if (Physics.Raycast(transform.position + Vector3.up, _playerVelocity.normalized, out hit, _sightRange))
         {
             if (hit.transform.tag == "Player")
             {

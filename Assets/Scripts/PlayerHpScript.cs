@@ -16,8 +16,20 @@ public class PlayerHpScript : MonoBehaviour
     #region 変数宣言
     [SerializeField, Header("プレイヤー最大HP")]
     private int _maxHp = 100;
+    [SerializeField, Header("回復量")]
+    private int _healValue = 10;
+    [SerializeField, Header("通常時の回復速度")]
+    private float _normalHealTime = 1;
+    [SerializeReference, Header("潜り状態の回復速度")]
+    private float _diverHealTime = 0.125f;
+    //プレイヤースクリプト
+    private PlayerScript _playerScript = default;
     //現在のHP
     private int _nowHp = default;
+    //回復までのクールタイム
+    private float _damegeCoolTimeCount = default;
+    //クールタイムの比較よう
+    private float _damegeCoolCheak = default;
 
     public int GetNowHp { get => _nowHp; }
     #endregion
@@ -28,6 +40,30 @@ public class PlayerHpScript : MonoBehaviour
     {
         //HP初期化
         _nowHp = _maxHp;
+        //プレイヤースクリプト
+        _playerScript = GetComponent<PlayerScript>();
+        //クールタイムの初期設定
+        _damegeCoolCheak = _normalHealTime;
+    }
+    private void Update()
+    {
+        //タイム加算
+        _damegeCoolTimeCount += Time.deltaTime;
+        if (_damegeCoolTimeCount >= _damegeCoolCheak)
+        {
+            _damegeCoolTimeCount = 0;
+            //回復
+            HealNowHp();
+        }
+        //回復速度を決める
+        if(_playerScript.GetNowStatus == PlayerScript.PlayerStatus.Crouch|| _playerScript.GetNowStatus == PlayerScript.PlayerStatus.Diver)
+        {
+            _damegeCoolCheak = _diverHealTime;
+        }
+        else
+        {
+            _damegeCoolCheak = _normalHealTime;
+        }
     }
     /// <summary>
     /// HP減少
@@ -40,6 +76,8 @@ public class PlayerHpScript : MonoBehaviour
             _nowHp = 0;
             return;
         }
+        //回復までの時間を初期化
+        _damegeCoolTimeCount = 0;
         //HP減少
         _nowHp = _nowHp - damege;
     }
@@ -47,7 +85,7 @@ public class PlayerHpScript : MonoBehaviour
     /// HP回復
     /// </summary>
     /// <param name="healValue">回復量</param>
-    public void HealNowHp(int healValue)
+    public void HealNowHp()
     {
         if (_nowHp >= _maxHp)
         {
@@ -55,7 +93,7 @@ public class PlayerHpScript : MonoBehaviour
             return;
         }
         //HP回復
-        _nowHp += healValue;
+        _nowHp += _healValue;
     }
     /// <summary>
     /// HPを最大値まで回復

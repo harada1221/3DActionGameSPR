@@ -18,9 +18,9 @@ public class CameraScript : MonoBehaviour
     private GameObject _player = default;
     [SerializeField, Header("移動スピード")]
     private float _speed = default;
+    //プレイヤーのスクリプト
     private PlayerScript _playerScript = default;
-    private GameObject _hitObj = default;
-    private const float  _rayDistance = 3f;
+    //入力の名前
     private const string _horizontal = "Horizontal2";
     private const string _vertical = "Vertical2";
     #endregion
@@ -54,27 +54,6 @@ public class CameraScript : MonoBehaviour
         {
             //回転軸はカメラ自身のX軸
             transform.RotateAround(_player.transform.position, transform.right, Y_Rotation * Time.deltaTime * _speed);
-        }
-       
-        //カメラに重なったら消す
-        Ray ray = new Ray(transform.position, transform.forward);
-        RaycastHit hit;
-        if(Physics.Raycast(ray,out hit, _rayDistance))
-        {
-            if(_hitObj != null)
-            {
-                _hitObj.gameObject.layer = 0;
-            }
-
-            _hitObj = hit.collider.gameObject;
-            _hitObj.gameObject.layer = 8;
-        }
-        else
-        {
-            if(_hitObj != null)
-            {
-                _hitObj.gameObject.layer = 0;
-            }
         }
     }
    
