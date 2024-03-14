@@ -8,6 +8,7 @@ TagManager:
   - Tank
   - RespwnPosition
   - Enemy
+  - EnemyController
   layers:
   - Default
   - TransparentFX

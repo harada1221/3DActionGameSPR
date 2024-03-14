@@ -1,6 +1,9 @@
 /*
 *　　説明　
 *　　日付
+*
+*
+*
 *　　原田　智大
 */
 
@@ -8,7 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BallScript : MonoBehaviour
+public class EnemyBallScript  : MonoBehaviour
 {
     #region 変数宣言
     [SerializeField, Header("スピード")]
@@ -26,11 +29,9 @@ public class BallScript : MonoBehaviour
     //射撃位置
     private Vector3 _nowShotPosition = default;
     //銃のスクリプト
-    private GunScript _gunScript = default;
+    private EnemyGunScript _gunScript = default;
     //与えるダメージ
     private int _shootDamege = default;
-    //エフェクト表示
-    private SplashControlScript _splashControlScript = default;
     //射程の最高地点に到達したか
     private bool isAngle = default;
     #endregion
@@ -39,10 +40,8 @@ public class BallScript : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        //銃のスクリプト
-        _gunScript = GameObject.FindWithTag("Player").GetComponent<GunScript>();
-        //エフェクトのスクリプト
-        _splashControlScript = GameObject.FindWithTag("Player").GetComponent<SplashControlScript>();
+        //敵の銃のスクリプト
+        _gunScript = GameObject.FindWithTag("EnemyController").GetComponent<EnemyGunScript>();
     }
 
     /// <summary>
@@ -73,14 +72,14 @@ public class BallScript : MonoBehaviour
     /// </summary>
     /// <param name="shotDirections">飛ばす方向</param>
     /// <param name="shotPosition">発射位置</param>
-    public void SetVelocity(Vector3 shotDirections, Vector3 shotPosition)
+    public void SetVelocity(Vector3 shotDirections,Vector3 enemyPosition)
     {
         //射程範囲内の初期化
         isAngle = false;
         //向き設定
         _shootVelocity = shotDirections.normalized;
-        //発射位置
-        _nowShotPosition = shotPosition;
+        //
+        _nowShotPosition = enemyPosition;
     }
     /// <summary>
     /// 与えるダメージ設定
@@ -121,7 +120,6 @@ public class BallScript : MonoBehaviour
                 Vector3 normal = contact.normal;
                 Vector3 hitPosition = contact.point;
                 Vector3 tangent = Vector3.Cross(normal, Vector3.right).normalized;
-                _splashControlScript.StartEffects(hitPosition, normal);
                 if (tangent.sqrMagnitude < 0.01f)
                 {
                     tangent = Vector3.Cross(normal, Vector3.forward).normalized;
@@ -138,19 +136,22 @@ public class BallScript : MonoBehaviour
             }
             //弾回収
             HideFromStage();
+
         }
         //敵に当たった処理
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Player")
         {
             //EnemyScript取得
-            EnemyScript enemyScript = collision.gameObject.GetComponent<EnemyScript>();
-            if (enemyScript != null)
+            PlayerHpScript playerHp = collision.gameObject.GetComponent<PlayerHpScript>();
+            if (playerHp != null)
             {
                 //敵のHPを減らす
-                enemyScript.DownHp(_shootDamege);
+                playerHp.DownNowHp(_shootDamege);
                 //回収
                 HideFromStage();
             }
         }
+
     }
 }
+

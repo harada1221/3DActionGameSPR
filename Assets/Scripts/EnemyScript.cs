@@ -1,9 +1,6 @@
 /*
 *　　説明　
 *　　日付
-*
-*
-*
 *　　原田　智大
 */
 
@@ -20,14 +17,21 @@ public class EnemyScript : MonoBehaviour
     private float _moveSpeed = 5f;
     [SerializeField, Header("HP")]
     private int _nowHp = 100;
-    //
+    [SerializeField, Header("移動方向")]
+    private Vector3[] _movePosition = default;
+    //敵要の銃スクリプト
+    private EnemyGunScript _enemyGunScript = default;
+    //ポジションの配列のインデックス
+    private int _currentIndex = 0;
+    //プレイヤーの向き
     private Vector3 _playerVelocity = default;
     //プレイヤーのポジション
     private Transform _playerPosition = default;
+    //現在のステータス
+    private EenemyStatus _nowStatus = EenemyStatus.Move;
 
     private enum EenemyStatus
     {
-        Idle,
         Shot,
         Move
     }
@@ -39,6 +43,8 @@ public class EnemyScript : MonoBehaviour
     {
         //プレイヤーの位置を取得
         _playerPosition = GameObject.FindGameObjectWithTag("Player").transform;
+        //敵の銃取得
+        _enemyGunScript = GameObject.FindWithTag("EnemyController").GetComponent<EnemyGunScript>();
     }
 
     /// <summary>
@@ -46,11 +52,42 @@ public class EnemyScript : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        //プレイヤーが視界内にいるかをチェック
+        //プレイヤーを見つけたか
         if (CanSeePlayer())
         {
-            //プレイヤーを見つけた場合の処理
-            Debug.Log("Player spotted!");
+            //射撃のステータス変更
+            _nowStatus = EenemyStatus.Shot;
+        }
+        else
+        {
+            _nowStatus = EenemyStatus.Move;
+        }
+        switch (_nowStatus)
+        {
+            case EenemyStatus.Shot:
+                //射撃する
+                _enemyGunScript.Ballistic(_playerVelocity + Vector3.up, transform.position);
+                break;
+            case EenemyStatus.Move:
+                //移動先がなければリターン
+                if (_movePosition.Length == 0)
+                {
+                    return;
+                }
+                //移動させる
+                transform.position = Vector3.MoveTowards(transform.position, _movePosition[_currentIndex], _moveSpeed * Time.deltaTime);
+                //移動が終わったか
+                if (transform.position == _movePosition[_currentIndex])
+                {
+                    //インデックス増加
+                    _currentIndex++;
+                    //_movePositionの長さを超えたら最初に戻る
+                    if (_currentIndex >= _movePosition.Length)
+                    {
+                        _currentIndex = 0;
+                    }
+                }
+                break;
         }
     }
     /// <summary>
@@ -62,7 +99,8 @@ public class EnemyScript : MonoBehaviour
         //プレイヤーとの間にレイキャストを飛ばし、障害物がなければ true を返す
         RaycastHit hit;
         _playerVelocity = _playerPosition.position - transform.position;
-        if (Physics.Raycast(transform.position, _playerVelocity, out hit, _sightRange))
+        Debug.DrawRay(transform.position, _playerVelocity.normalized * _sightRange, Color.red);
+        if (Physics.Raycast(transform.position, _playerVelocity.normalized, out hit, _sightRange))
         {
             if (hit.transform.tag == "Player")
             {
@@ -77,5 +115,18 @@ public class EnemyScript : MonoBehaviour
         //レイが何にも当たらなかった場合
         return false;
     }
+    /// <summary>
+    /// HPを減らす
+    /// </summary>
+    /// <param name="damege">減らす量</param>
+    public void DownHp(int damege)
+    {
+        //HPを減らす
+        _nowHp -= damege;
+        //HPが0いかになったら消滅
+        if (_nowHp <= 0)
+        {
+            this.gameObject.SetActive(false);
+        }
+    }
 }
-

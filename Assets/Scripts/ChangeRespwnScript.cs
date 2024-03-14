@@ -37,7 +37,7 @@ public class ChangeRespwnScript : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) < 1 && isChageRespwn == false)
         {
             isChageRespwn = true;
-            _playerScript.ChangeRespawnPosition(transform.position);
+            _playerScript.ChangeReSpawnPosition(transform.position);
             GetComponent<Renderer>().material.color = Color.red;
         }
     }

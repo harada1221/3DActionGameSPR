@@ -43,6 +43,8 @@ public class PlayerScript : MonoBehaviour
     private BombControlScript _bombControlScript = default;
     //インクタンクのスクリプト
     private TankScript _tankScript = default;
+    //HP管理スクリプト
+    private PlayerHpScript _hpScript = default;
     //プレイヤーのアニメータ
     private Animator _animator = default;
     //タイマーカウント
@@ -61,7 +63,7 @@ public class PlayerScript : MonoBehaviour
     private Vector3 _respawnPlayerPosition = default;
     //カメラのリスポーン位置
     private Vector3 _respawnCameraPosition = default;
-    //
+    //カメラのリスポーン向き
     private Vector3 _respwnCameraRotation = default;
 
     //入力の名前
@@ -95,11 +97,13 @@ public class PlayerScript : MonoBehaviour
         _gunScript = GetComponent<GunScript>();
         //ボムの管理スクリプト
         _bombControlScript = GetComponent<BombControlScript>();
+        //HP管理スクリプト
+        _hpScript = GetComponent<PlayerHpScript>();
         //プレイヤーリスポーンの初期位置
         _respawnPlayerPosition = transform.position;
         //カメラのリスポーン初期位置
         _respawnCameraPosition = _respawnPlayerPosition + (_mainCamera.transform.position - transform.position);
-        //
+        //カメラの初期向き
         _respwnCameraRotation = _mainCamera.transform.localEulerAngles;
     }
 
@@ -114,12 +118,11 @@ public class PlayerScript : MonoBehaviour
             //インク回復
             _tankScript.InkRecovery(_playerStatus);
         }
+        Debug.Log(_playerStatus);
         //リスポーン
-        if (transform.position.y < -3)
+        if (transform.position.y < -3 || _hpScript.GetNowHp <= 0)
         {
-            transform.position = _respawnPlayerPosition;
-            _mainCamera.transform.position = _respawnCameraPosition;
-            _mainCamera.transform.rotation = Quaternion.Euler(_respwnCameraRotation);
+            ReSpawn();
         }
         //スティックのX,Y軸がどれほど移動したか
         float X_Move = Input.GetAxisRaw(_horizontal);
@@ -209,7 +212,7 @@ public class PlayerScript : MonoBehaviour
                 //大きさ変更
                 this.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
                 //壁に当たっているか
-                if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out hit, _rayDistance * 2))
+                if (Physics.Raycast(transform.position, transform.forward, out hit, _rayDistance))
                 {
                     //自分の色に触れているか
                     ColorCheck(hit);
@@ -324,7 +327,7 @@ public class PlayerScript : MonoBehaviour
             transform.rotation = newRotation;
         }
         //壁に当たっているか
-        if (!Physics.Raycast(transform.position, _playerMoveDirection, _rayDistance))
+        if (!Physics.Raycast(transform.position, _playerMoveDirection, _rayDistance * 2))
         {
             //移動させる
             transform.position += _playerMoveDirection * _crouchSpeed * Time.deltaTime;
@@ -455,11 +458,21 @@ public class PlayerScript : MonoBehaviour
     /// リスポーン地点変更
     /// </summary>
     /// <param name="respawnPosition">リスポーン位置</param>
-    public void ChangeRespawnPosition(Vector3 respawnPosition)
+    public void ChangeReSpawnPosition(Vector3 respawnPosition)
     {
         //プレイヤーリスポーンの変更位置
         _respawnPlayerPosition = respawnPosition;
         //カメラのリスポーン変更位置
         _respawnCameraPosition = _respawnPlayerPosition + new Vector3(0f, 2.5f, -4f);
+    }
+    /// <summary>
+    /// リスポーンさせる
+    /// </summary>
+    private void ReSpawn()
+    {
+        _hpScript.HpMaxHeal();
+        transform.position = _respawnPlayerPosition;
+        _mainCamera.transform.position = _respawnCameraPosition;
+        _mainCamera.transform.rotation = Quaternion.Euler(_respwnCameraRotation);
     }
 }
