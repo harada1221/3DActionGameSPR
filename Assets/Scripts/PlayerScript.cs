@@ -118,6 +118,7 @@ public class PlayerScript : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        Debug.Log(_playerStatus);
         //スティックのX,Z軸がどれほど移動したか
         float X_Move = Input.GetAxisRaw(_horizontal);
         float Z_Move = Input.GetAxisRaw(_vertical);
@@ -164,8 +165,6 @@ public class PlayerScript : MonoBehaviour
         {
             //徐々に減速させる
             _playerMoveDirection -= _playerMoveDirection * Time.deltaTime * _speed;
-            //慣性の移動分
-            PlayerCrouchMove(X_Move, Z_Move);
         }
         if (X_Move == 0 && Z_Move == 0)
         {
@@ -182,7 +181,6 @@ public class PlayerScript : MonoBehaviour
         }
         RaycastHit hit;
         //着地
-        Debug.DrawRay(transform.position, Vector3.down * _rayDistance, Color.red);
         if (Physics.Raycast(transform.position, Vector3.down, out hit, _rayDistance, _targetLayer))
         {
             //自分の色の上にいるか
@@ -319,8 +317,7 @@ public class PlayerScript : MonoBehaviour
         moveDirection = moveDirection.normalized;
 
         //加速度の増加
-        Vector3 acceleration = moveDirection * _crouchAcceleration;
-        _playerMoveDirection += acceleration * Time.deltaTime;
+        _playerMoveDirection += moveDirection * _crouchAcceleration * Time.deltaTime;
         //移動速度を制限
         if (_playerMoveDirection.magnitude > _maxSpeed)
         {
@@ -375,7 +372,7 @@ public class PlayerScript : MonoBehaviour
             }
             else
             {
-                //位置調整￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥仮置き
+                //位置調整
                 moveDirection = Vector3.up * 15;
             }
 
@@ -429,6 +426,10 @@ public class PlayerScript : MonoBehaviour
             transform.rotation = Quaternion.Euler(playerRotation);
         }
     }
+    /// <summary>
+    /// 色の上にいるか判定する
+    /// </summary>
+    /// <param name="hit">現在地</param>
     private void ColorCheck(RaycastHit hit)
     {
         Color color = default;
@@ -447,12 +448,11 @@ public class PlayerScript : MonoBehaviour
                 if (texture != null)
                 {
                     color = texture.GetPixelBilinear(uv.x, uv.y);
-                    Debug.Log(hit.textureCoord);
                 }
             }
         }
         //一定の範囲内か
-        if (color.r >= 0.2 && color.g <= 0.7 && color.b <= 0.7)
+        if (color.r >= 0.4 && color.g <= 0.4 && color.b <= 0.4)
         {
             isMyColor = true;
         }
@@ -461,7 +461,7 @@ public class PlayerScript : MonoBehaviour
             isMyColor = false;
         }
         //敵のインクか
-        if (color.r <= 0.7 && color.g <= 0.7 && color.b >= 0.4)
+        if (color.r <= 0.4 && color.g <= 0.4 && color.b >= 0.4)
         {
             isEnemyColor = true;
         }
@@ -474,7 +474,7 @@ public class PlayerScript : MonoBehaviour
     /// リスポーン地点変更
     /// </summary>
     /// <param name="respawnPosition">リスポーン位置</param>
-    public void ChangeReSpawnPosition(Vector3 respawnPosition,Vector3 respawnCameraPosition,Vector3 respawnCameraRotation)
+    public void ChangeReSpawnPosition(Vector3 respawnPosition, Vector3 respawnCameraPosition, Vector3 respawnCameraRotation)
     {
         //プレイヤーリスポーンの変更位置
         _respawnPlayerPosition = respawnPosition;
