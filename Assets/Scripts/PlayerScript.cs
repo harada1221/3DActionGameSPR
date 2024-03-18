@@ -57,6 +57,8 @@ public class PlayerScript : MonoBehaviour
     private bool isShoot = false;
     //自分の色の上フラグ
     private bool isMyColor = false;
+    //敵チームの色の上フラグ
+    private bool isEnemyColor = false;
     //プレイヤーのステート
     private PlayerStatus _playerStatus = PlayerStatus.Idle;
     //プレイヤーの移動方向
@@ -86,6 +88,7 @@ public class PlayerScript : MonoBehaviour
     #region プロパティ
     public bool GetShoot { get => isShoot; }
     public PlayerStatus GetNowStatus { get => _playerStatus; }
+    public bool GetEnemyColor { get => isEnemyColor; }
     #endregion
     /// <summary>
     /// 初期化処理
@@ -179,6 +182,7 @@ public class PlayerScript : MonoBehaviour
         }
         RaycastHit hit;
         //着地
+        Debug.DrawRay(transform.position, Vector3.down * _rayDistance, Color.red);
         if (Physics.Raycast(transform.position, Vector3.down, out hit, _rayDistance, _targetLayer))
         {
             //自分の色の上にいるか
@@ -214,7 +218,7 @@ public class PlayerScript : MonoBehaviour
                 //大きさ変更
                 this.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
                 //壁に当たっているか
-                if (Physics.Raycast(transform.position, transform.forward, out hit, _rayDistance,_targetLayer))
+                if (Physics.Raycast(transform.position, transform.forward, out hit, _rayDistance, _targetLayer))
                 {
                     //自分の色に触れているか
                     ColorCheck(hit);
@@ -430,7 +434,7 @@ public class PlayerScript : MonoBehaviour
         Color color = default;
         //当たったオブジェクトがMeshColliderを持っているか確認する
         MeshCollider meshCollider = hit.collider.GetComponent<MeshCollider>();
-        if (meshCollider != null && meshCollider.sharedMesh != null)
+        if (meshCollider != null)
         {
             //ヒットしたポイントのUV座標を取得する
             Vector2 uv = hit.textureCoord;
@@ -443,11 +447,12 @@ public class PlayerScript : MonoBehaviour
                 if (texture != null)
                 {
                     color = texture.GetPixelBilinear(uv.x, uv.y);
+                    Debug.Log(hit.textureCoord);
                 }
             }
         }
-        //仮置き\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-        if (color.r >= 0.4 && color.g <= 0.4 && color.b <= 0.4)
+        //一定の範囲内か
+        if (color.r >= 0.2 && color.g <= 0.7 && color.b <= 0.7)
         {
             isMyColor = true;
         }
@@ -455,17 +460,28 @@ public class PlayerScript : MonoBehaviour
         {
             isMyColor = false;
         }
+        //敵のインクか
+        if (color.r <= 0.7 && color.g <= 0.7 && color.b >= 0.4)
+        {
+            isEnemyColor = true;
+        }
+        else
+        {
+            isEnemyColor = false;
+        }
     }
     /// <summary>
     /// リスポーン地点変更
     /// </summary>
     /// <param name="respawnPosition">リスポーン位置</param>
-    public void ChangeReSpawnPosition(Vector3 respawnPosition)
+    public void ChangeReSpawnPosition(Vector3 respawnPosition,Vector3 respawnCameraPosition,Vector3 respawnCameraRotation)
     {
         //プレイヤーリスポーンの変更位置
         _respawnPlayerPosition = respawnPosition;
         //カメラのリスポーン変更位置
-        _respawnCameraPosition = _respawnPlayerPosition + new Vector3(0f, 2.5f, -4f);
+        _respawnCameraPosition = respawnCameraPosition;
+        //
+        _respwnCameraRotation = respawnCameraRotation;
     }
     /// <summary>
     /// リスポーンさせる

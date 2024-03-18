@@ -15,10 +15,13 @@ public class Painteble : MonoBehaviour
     #region 変数宣言
     [SerializeField, Header("貼り付けるテクスチャ")]
     private Texture _texture = default;
-    MeshRenderer _meshRenderer = default;
-    MeshFilter _meshFilter = default;
-    DecalPainter _decalPainter = default;
-    Material _material = default;
+    //貼り付けるために必要なMesh系
+    private MeshRenderer _meshRenderer = default;
+    private MeshFilter _meshFilter = default;
+    //Decalを貼り付けるスクリプト
+    private DecalPainter _decalPainter = default;
+    //マテリアル
+    private Material _material = default;
     #endregion
     /// <summary>
     /// 初期化処理

@@ -14,6 +14,10 @@ using UnityEngine;
 public class ChangeRespwnScript : MonoBehaviour
 {
     #region 変数宣言
+    [SerializeField, Header("カメラポジション")]
+    private Vector3 _cameraPosition = default;
+    [SerializeField, Header("カメラローテンション")]
+    private Vector3 _cameraRotation = default;
     //プレイヤーオブジェクト
     private GameObject _player = default;
     //プレイヤースクリプト
@@ -37,7 +41,7 @@ public class ChangeRespwnScript : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) < 1 && isChageRespwn == false)
         {
             isChageRespwn = true;
-            _playerScript.ChangeReSpawnPosition(transform.position);
+            _playerScript.ChangeReSpawnPosition(transform.position, _cameraPosition,_cameraRotation);
             GetComponent<Renderer>().material.color = Color.red;
         }
     }
