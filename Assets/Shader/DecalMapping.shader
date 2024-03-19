@@ -32,14 +32,14 @@ Shader "DecalMapping"
 		SAMPLER(sampler_DecalTexture);
 		
 		CBUFFER_START(UnityPerMaterial)
-		float4 _AccumulateTexture_ST;
-		float4 _DecalTexture_ST;
-		float _DecalSize;
-		float3 _DecalPositionOS;
-		float3 _DecalNormal;
-		float3 _DecalTangent;
-		float4 _Color;
-		float3 _ObjectScale;
+		float4 _AccumulateTexture_ST;//累積用のテクスチャを指定
+		float4 _DecalTexture_ST;//デカール用のテクスチャを指定
+		float _DecalSize;//デカールの半径を指定
+		float3 _DecalPositionOS;//デカールの位置をオブジェクト空間で指定
+		float3 _DecalNormal;//デカールの法線を指定
+		float3 _DecalTangent;//デカールの接線を指定
+		float4 _Color;//デカールの色を指定
+		float3 _ObjectScale;//オブジェクトのスケールを指定
 		CBUFFER_END
 		ENDHLSL
 

@@ -18,6 +18,10 @@ public class ChangeRespwnScript : MonoBehaviour
     private Vector3 _cameraPosition = default;
     [SerializeField, Header("カメラローテンション")]
     private Vector3 _cameraRotation = default;
+    [SerializeField, Header("消える時間")]
+    private float _fadeOutTime = 3;
+    //更新UI
+    private CanvasGroup _updatePositionui = default;
     //プレイヤーオブジェクト
     private GameObject _player = default;
     //プレイヤースクリプト
@@ -34,6 +38,8 @@ public class ChangeRespwnScript : MonoBehaviour
         _player = GameObject.FindGameObjectWithTag("Player");
         //プレイヤースクリプト取得
         _playerScript = _player.GetComponent<PlayerScript>();
+        //表示UI取得
+        _updatePositionui = GameObject.FindGameObjectWithTag("RespwnUI").GetComponent<CanvasGroup>();
     }
     private void Update()
     {
@@ -41,8 +47,19 @@ public class ChangeRespwnScript : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) < 1 && isChageRespwn == false)
         {
             isChageRespwn = true;
-            _playerScript.ChangeReSpawnPosition(transform.position, _cameraPosition,_cameraRotation);
+            _playerScript.ChangeReSpawnPosition(transform.position, _cameraPosition, _cameraRotation);
             GetComponent<Renderer>().material.color = Color.red;
+            _updatePositionui.alpha = 1;
+        }
+        //少しづつ透明化
+        if (isChageRespwn == true && _updatePositionui != null)
+        {
+            _fadeOutTime -= Time.deltaTime;
+            _updatePositionui.alpha = _fadeOutTime;
+            if(_updatePositionui.alpha == 0)
+            {
+                _updatePositionui = null;
+            }
         }
     }
 }

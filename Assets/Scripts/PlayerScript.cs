@@ -118,7 +118,6 @@ public class PlayerScript : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        Debug.Log(_playerStatus);
         //スティックのX,Z軸がどれほど移動したか
         float X_Move = Input.GetAxisRaw(_horizontal);
         float Z_Move = Input.GetAxisRaw(_vertical);
@@ -376,6 +375,10 @@ public class PlayerScript : MonoBehaviour
                 moveDirection = Vector3.up * 15;
             }
 
+        }
+        else
+        {
+            _playerStatus = PlayerStatus.Small;
         }
         //床に当たっていて下入力されているか
         if (Physics.Raycast(transform.position + new Vector3(0, -0.3f, 0), Vector3.down, _rayDistance, _targetLayer) && MoveZ <= 0)

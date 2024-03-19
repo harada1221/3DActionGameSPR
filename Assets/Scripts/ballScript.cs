@@ -63,7 +63,7 @@ public class BallScript : MonoBehaviour
             FoolMove();
         }
         //0以下だと回収
-        if (transform.position.y < -1)
+        if (transform.position.y < 0)
         {
             HideFromStage();
         }
