@@ -47,8 +47,11 @@ public class ChangeRespwnScript : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) < 1 && isChageRespwn == false)
         {
             isChageRespwn = true;
+            //リスポーン地点変更
             _playerScript.ChangeReSpawnPosition(transform.position, _cameraPosition, _cameraRotation);
+            //色変更
             GetComponent<Renderer>().material.color = Color.red;
+            //表示
             _updatePositionui.alpha = 1;
         }
         //少しづつ透明化

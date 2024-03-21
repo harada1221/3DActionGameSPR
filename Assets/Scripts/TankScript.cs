@@ -31,7 +31,7 @@ public class TankScript : MonoBehaviour
     private float _nowCapacity = default;
     //初期のタンクの大きさ
     private Vector3 _baseScale = default;
-    //
+    //インクの残量が最小値か
     private bool isLomitOver = false;
 
     #endregion

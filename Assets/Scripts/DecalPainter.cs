@@ -19,10 +19,8 @@ public class DecalPainter : IDisposable
 
     public Texture2D texture { get; private set; }
     public Material mappingMaterial { get; private set; }
-
+    //メッシュを取得よう
     private Mesh _targetMesh = default;
-
-
     public DecalPainter(MeshFilter targetMeshFilter, int textureSize = 2048)
     {
         //転写に使う情報、Meshのコピーを複製。
@@ -31,7 +29,10 @@ public class DecalPainter : IDisposable
         //累積テクスチャ
         texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
         Color[] pixels = new Color[textureSize * textureSize];
-        for (int i = 0; i < pixels.Length; ++i) { pixels[i] = Color.white; }
+        for (int i = 0; i < pixels.Length; ++i) 
+        { 
+            pixels[i] = Color.white;
+        }
         texture.SetPixels(pixels);
         texture.Apply();
 
