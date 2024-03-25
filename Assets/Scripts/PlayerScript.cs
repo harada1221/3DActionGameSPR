@@ -1,9 +1,5 @@
 /*
-*　　説明　
-*　　日付
-*
-*
-*
+*　　説明　プレイヤーの操作を管理
 *　　原田　智大
 */
 
@@ -77,6 +73,10 @@ public class PlayerScript : MonoBehaviour
     private const string _shot = "RTrigger";
     private const string _crouch = "LTrigger";
     private const string _rb = "RB";
+    //インク塗りの判定
+    private const float _inkvalue = 0.4f;
+    //rayの位置調整の位置
+    private Vector3 _rayPositionChange = new Vector3(0f, 0.3f, 0f);
     #endregion
     public enum PlayerStatus
     {
@@ -131,7 +131,7 @@ public class PlayerScript : MonoBehaviour
             _tankScript.InkRecovery(_playerStatus);
         }
         //リスポーン
-        if (transform.position.y < -3 || _hpScript.GetNowHp <= 0)
+        if (transform.position.y < 0 || _hpScript.GetNowHp <= 0)
         {
             ReSpawn();
         }
@@ -314,6 +314,8 @@ public class PlayerScript : MonoBehaviour
         cameraRight.y -= _mainCamera.transform.right.y;
         Vector3 moveDirection = comForward * MoveZ + cameraRight * MoveX;
         moveDirection = moveDirection.normalized;
+        //rayの長さ調整
+        int rayDistanceChange = 2;
 
         //加速度の増加
         _playerMoveDirection += moveDirection * _crouchAcceleration * Time.deltaTime;
@@ -329,7 +331,7 @@ public class PlayerScript : MonoBehaviour
             transform.rotation = newRotation;
         }
         //壁に当たっているか
-        if (!Physics.Raycast(transform.position, _playerMoveDirection, _rayDistance * 2, _targetLayer))
+        if (!Physics.Raycast(transform.position, _playerMoveDirection, _rayDistance * rayDistanceChange, _targetLayer))
         {
             //移動させる
             transform.position += _playerMoveDirection * _crouchSpeed * Time.deltaTime;
@@ -354,7 +356,8 @@ public class PlayerScript : MonoBehaviour
         this.transform.localScale = Vector3.zero;
         RaycastHit hit;
         Vector3 moveDirection = default;
-        if (Physics.Raycast(transform.position + new Vector3(0, -0.4f, 0), transform.forward, out hit, _rayDistance * 2, _targetLayer))
+        int rayDistanceChange = 2;
+        if (Physics.Raycast(transform.position - _rayPositionChange, transform.forward, out hit, _rayDistance * rayDistanceChange, _targetLayer))
         {
             //ジャンプ情報初期化
             isJump = false;
@@ -372,7 +375,7 @@ public class PlayerScript : MonoBehaviour
             else
             {
                 //位置調整
-                moveDirection = Vector3.up * 15;
+                moveDirection = Vector3.up;
             }
 
         }
@@ -381,7 +384,7 @@ public class PlayerScript : MonoBehaviour
             _playerStatus = PlayerStatus.Small;
         }
         //床に当たっていて下入力されているか
-        if (Physics.Raycast(transform.position + new Vector3(0, -0.3f, 0), Vector3.down, _rayDistance, _targetLayer) && MoveZ <= 0)
+        if (Physics.Raycast(transform.position - _rayPositionChange, Vector3.down, _rayDistance, _targetLayer) && MoveZ <= 0)
         {
             //ステータス変更
             _playerStatus = PlayerStatus.Crouch;
@@ -454,8 +457,8 @@ public class PlayerScript : MonoBehaviour
                 }
             }
         }
-        //一定の範囲内か
-        if (color.r >= 0.4 && color.g <= 0.4 && color.b <= 0.4)
+        //味方のインクか
+        if (color.r >= _inkvalue && color.g <= _inkvalue && color.b <= _inkvalue)
         {
             isMyColor = true;
         }
@@ -464,7 +467,7 @@ public class PlayerScript : MonoBehaviour
             isMyColor = false;
         }
         //敵のインクか
-        if (color.r <= 0.4 && color.g <= 0.4 && color.b >= 0.4)
+        if (color.r <= _inkvalue && color.g <= _inkvalue && color.b >= _inkvalue)
         {
             isEnemyColor = true;
         }
@@ -483,7 +486,7 @@ public class PlayerScript : MonoBehaviour
         _respawnPlayerPosition = respawnPosition;
         //カメラのリスポーン変更位置
         _respawnCameraPosition = respawnCameraPosition;
-        //
+        //カメラ向き調整
         _respwnCameraRotation = respawnCameraRotation;
     }
     /// <summary>
@@ -491,9 +494,13 @@ public class PlayerScript : MonoBehaviour
     /// </summary>
     private void ReSpawn()
     {
+        //HP回復
         _hpScript.HpMaxHeal();
+        //プレイヤー位置移動
         transform.position = _respawnPlayerPosition;
+        //カメラ位置移動
         _mainCamera.transform.position = _respawnCameraPosition;
+        //カメラ向き変更
         _mainCamera.transform.rotation = Quaternion.Euler(_respwnCameraRotation);
     }
 }

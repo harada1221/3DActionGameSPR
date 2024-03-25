@@ -1,10 +1,11 @@
+/*
+*　　説明　Meshに対してモデル空間にてブラシ描画をし、その描画結果をUVに展開されたTextureとして更新する
+*　　原田　智大
+*/
+
 using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
-/// <summary>
-/// Meshに対してモデル空間にてブラシ描画をし、その描画結果をUVに展開されたTextureとして更新する。
-/// </summary>
 public class DecalPainter : IDisposable
 {
     const string SHADER_NAME = "DecalMapping";

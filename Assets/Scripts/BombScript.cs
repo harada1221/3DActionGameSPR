@@ -1,3 +1,7 @@
+/*
+*　　説明　ボムの挙動を管理
+*　　原田　智大
+*/
 using UnityEngine;
 
 public class BombScript : MonoBehaviour

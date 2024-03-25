@@ -1,9 +1,5 @@
 /*
-*　　説明　
-*　　日付
-*
-*
-*
+*　　説明　カメラの移動を管理
 *　　原田　智大
 */
 
@@ -37,26 +33,26 @@ public class CameraScript : MonoBehaviour
         float X_Rotation = Input.GetAxisRaw(_horizontal);
         float Y_Rotation = Input.GetAxisRaw(_vertical);
         //X方向に一定量移動していれば横回転
-        if (Mathf.Abs(X_Rotation) > 0.001f&&_playerScript.GetShoot == false)
+        if (Mathf.Abs(X_Rotation) != 0f && _playerScript.GetShoot == false)
         {
             //回転軸はワールド座標のY軸
             transform.RotateAround(_player.transform.position, Vector3.up, X_Rotation * Time.deltaTime * _speed);
         }
         //射撃中の移動
-        else if(_playerScript.GetShoot == true)
+        else if (_playerScript.GetShoot == true)
         {
             //回転軸はワールド座標のY軸
             transform.RotateAround(_player.transform.position, Vector3.up, X_Rotation * Time.deltaTime * _speed);
             _player.transform.RotateAround(_player.transform.position, Vector3.up, X_Rotation * Time.deltaTime * _speed);
         }
         //Y方向に一定量移動していれば縦回転
-        if (Mathf.Abs(Y_Rotation) > 0.001f)
+        if (Mathf.Abs(Y_Rotation) != 0f)
         {
             //回転軸はカメラ自身のX軸
             transform.RotateAround(_player.transform.position, transform.right, Y_Rotation * Time.deltaTime * _speed);
         }
     }
-   
+
 }
 
 
