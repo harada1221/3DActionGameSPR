@@ -24,6 +24,7 @@ public class Painteble : MonoBehaviour
     /// </summary>
     private void Awake()
     {
+        //メッシュ取得
         _meshRenderer = GetComponent<MeshRenderer>();
         _meshFilter = GetComponent<MeshFilter>();
         //マテリアルをインスタンス化
@@ -34,9 +35,15 @@ public class Painteble : MonoBehaviour
         }
 
         //このMesh用デカール累積テクスチャを生成・設定
-        int textureSize = _material.mainTexture != null
-            ? _material.mainTexture.width
-            : 1024;
+        int textureSize;
+        if (_material.mainTexture != null)
+        {
+            textureSize = _material.mainTexture.width;
+        }
+        else
+        {
+            textureSize = 1024;
+        }
         _decalPainter = new DecalPainter(_meshFilter, textureSize);
         _decalPainter.BakeBaseTexture(_material.mainTexture);
         _material.mainTexture = _decalPainter.texture;
@@ -49,15 +56,17 @@ public class Painteble : MonoBehaviour
     /// デカール用の座標と傾き大きさ色を渡す
     /// </summary>
     public void Paint(
-        Vector3 worldPosition,
-        Vector3 normal,
-        Vector3 tangent,
-        float decalSize,
+        Vector3 worldPosition,//ワールド座標
+        Vector3 normal,//法線ベクトル
+        Vector3 tangent,//垂線ベクトル
+        float decalSize,//貼り付けるマテリアルの大きさ
         Color color)
     {
+        //ワールド座標からローカル座標に変更
         Vector3 positionOS = transform.InverseTransformPoint(worldPosition);
         Vector3 normalOS = transform.InverseTransformDirection(normal);
         Vector3 tangentOS = transform.InverseTransformDirection(tangent);
+        //デカール情報セット
         _decalPainter.SetPointer(
              positionOS,
              normalOS,

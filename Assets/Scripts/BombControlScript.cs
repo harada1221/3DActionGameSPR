@@ -32,6 +32,7 @@ public class BombControlScript : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        //タンクスクリプト取得
         _tankScript = GetComponent<TankScript>();
         //プール生成
         _bombQueue = new Queue<BombScript>();
@@ -53,6 +54,7 @@ public class BombControlScript : MonoBehaviour
         {
             return;
         }
+        //キューにあるか
         if (_bombQueue.Count <= 0)
         {
             //生成

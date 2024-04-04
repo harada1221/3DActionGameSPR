@@ -3,8 +3,6 @@
 *　　原田　智大
 */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
@@ -70,6 +68,7 @@ public class EnemyScript : MonoBehaviour
         }
         else
         {
+            //移動状態に
             _nowStatus = EenemyStatus.Move;
         }
         switch (_nowStatus)
@@ -140,9 +139,9 @@ public class EnemyScript : MonoBehaviour
         //プレイヤーとの間にレイキャストを飛ばし、障害物がなければ true を返す
         RaycastHit hit;
         _playerVelocity = _playerPosition.position - transform.position;
-        Debug.DrawRay(transform.position + Vector3.up / 2, _playerVelocity.normalized * _sightRange, Color.red);
         if (Physics.Raycast(transform.position + Vector3.up / 2, _playerVelocity.normalized, out hit, _sightRange, _targetLayer))
         {
+            //プレイヤーに当たったか
             if (hit.transform.tag == "Player")
             {
                 return true;
@@ -164,17 +163,13 @@ public class EnemyScript : MonoBehaviour
     {
         //自身の向き（正規化されたベクトル）
         Vector3 selfDir = transform.forward;
-
         //ターゲットまでの向きと距離計算
         Vector3 targetDir = _playerPosition.position - transform.position;
         float targetDistance = targetDir.magnitude;
-
         //視界角度の半分に対応するcos値を計算
         float cosHalfSightAngle = Mathf.Cos(_sightAngle / 2 * Mathf.Deg2Rad);
-
         //自身とターゲットへの向きの内積計算
         float innerProduct = Vector3.Dot(selfDir, targetDir.normalized);
-
         //視界判定
         return innerProduct > cosHalfSightAngle && targetDistance < _sightRange;
     }

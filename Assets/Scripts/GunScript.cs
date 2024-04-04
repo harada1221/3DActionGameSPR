@@ -14,7 +14,7 @@ public class GunScript : MonoBehaviour
     private Transform _shootPosition = default;
     [SerializeField, Header("メインカメラ")]
     private Camera _mainCamera = default;
-    [SerializeField, Header("威力")]
+    [SerializeField, Header("飛距離")]
     private float _power = default;
     [SerializeField, Header("生成する数")]
     private int _maxCount = 100;
@@ -35,12 +35,14 @@ public class GunScript : MonoBehaviour
     //プール用のQueue
     private Queue<BallScript> _ballQueue = default;
     #endregion
+    //飛距離を渡す
     public float GetPower { get => _power; }
     /// <summary>
     /// 初期化処理
     /// </summary>
     private void Start()
     {
+        //タンクスクリプト取得
         _tankScript = GetComponent<TankScript>();
         //プール生成
         _ballQueue = new Queue<BallScript>();
@@ -83,9 +85,11 @@ public class GunScript : MonoBehaviour
         BallScript ballScript = _ballQueue.Dequeue();
         //弾を表示
         ballScript.gameObject.SetActive(true);
-        //弾の方向を設定
+        //弾の方向を初期化
         _finalDestination = default;
+        //プレイヤーの正面方向取得
         _finalDestination = transform.forward;
+        //カメラのY座標を取得
         _finalDestination.y = _mainCamera.transform.forward.y;
         //発射位置に移動
         ballScript.transform.position = _shootPosition.transform.position;

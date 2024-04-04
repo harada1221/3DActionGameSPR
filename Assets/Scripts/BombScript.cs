@@ -42,7 +42,7 @@ public class BombScript : MonoBehaviour
             //物体の位置を更新
             transform.position += new Vector3(x, y, z) * _speed * Time.deltaTime;
             //物体が一定の高さより下にある場合は非表示にする
-            if (transform.position.y <= -1)
+            if (transform.position.y <= 0)
             {
                 HideFromStage();
             }

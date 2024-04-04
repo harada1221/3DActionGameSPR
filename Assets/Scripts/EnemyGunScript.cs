@@ -10,7 +10,7 @@ using UnityEngine;
 public class EnemyGunScript : MonoBehaviour
 {
     #region 変数宣言
-    [SerializeField, Header("威力")]
+    [SerializeField, Header("飛距離")]
     private float _power = default;
     [SerializeField, Header("生成する数")]
     private int _maxCount = 100;

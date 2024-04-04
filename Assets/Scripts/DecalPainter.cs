@@ -8,7 +8,9 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 public class DecalPainter : IDisposable
 {
+    //デカールを使用するShaderの名前
     const string SHADER_NAME = "DecalMapping";
+    //ShaderのIDを取得
     static readonly int _decalTextureNameID = Shader.PropertyToID("_DecalTexture");
     static readonly int _accumulateTextureNameID = Shader.PropertyToID("_AccumulateTexture");
     static readonly int _decalPositionOSNameID = Shader.PropertyToID("_DecalPositionOS");
@@ -102,9 +104,8 @@ public class DecalPainter : IDisposable
     }
 
     /// <summary>
-    /// マッピング用マテリアルにデカール情報をセットする。
-    /// 累積テクスチャにデカールテクスチャを重畳してるだけ。
-    /// 累積テクスチャに上書きするまで累積はされていかない。
+    /// マッピング用マテリアルにデカール情報をセットする
+    /// 累積テクスチャにデカールテクスチャを重畳
     /// </summary>
     public void SetPointer(
         Vector3 paintPositionOnObjectSpace,
@@ -115,6 +116,7 @@ public class DecalPainter : IDisposable
         Vector3 transformScale
     )
     {
+        //デカール情報を受け渡す
         mappingMaterial.SetVector(_decalPositionOSNameID, paintPositionOnObjectSpace);
         mappingMaterial.SetFloat(_decalSizeNameID, decalSize);
         mappingMaterial.SetVector(_decalNormalNameID, normal.normalized);
@@ -128,6 +130,7 @@ public class DecalPainter : IDisposable
     /// </summary>
     public void Paint()
     {
+        //Textureを保存する
         Texture2D dst = texture;
 
         //RenderTargetの設定

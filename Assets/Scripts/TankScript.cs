@@ -3,8 +3,6 @@
 *　　原田　智大
 */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,7 +54,9 @@ public class TankScript : MonoBehaviour
         {
             //容量変更
             _nowCapacity = 0;
+            //スライダーの値変更
             _inkTank.value = _nowCapacity;
+            //限界値になった
             isLomitOver = true;
             //UI表示
             _inkLmit.gameObject.SetActive(true);
@@ -75,6 +75,7 @@ public class TankScript : MonoBehaviour
         //上限だと処理しない
         if (_nowCapacity >= _maxCapacity)
         {
+            //最大値代入
             _nowCapacity = _maxCapacity;
             _inkTank.value = _nowCapacity;
             return;
@@ -105,6 +106,7 @@ public class TankScript : MonoBehaviour
                 _inkTank.gameObject.SetActive(true);
                 break;
         }
+        //見た目残量変更
         ChangeTank();
     }
     /// <summary>
@@ -120,8 +122,11 @@ public class TankScript : MonoBehaviour
         {
             _baseScale.y = 0;
         }
+        //スケール変更
         _tankObj.transform.localScale = _baseScale;
+        //限界値
         isLomitOver = false;
+        //インク残量のUI非表示
         _inkLmit.gameObject.SetActive(false);
     }
 }

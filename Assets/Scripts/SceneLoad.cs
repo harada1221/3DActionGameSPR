@@ -3,8 +3,6 @@
 *　　原田　智大
 */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

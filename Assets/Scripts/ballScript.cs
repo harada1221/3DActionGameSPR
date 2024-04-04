@@ -30,8 +30,6 @@ public class BallScript : MonoBehaviour
     private int _shootDamege = default;
     //エフェクト表示
     private SplashControlScript _splashControlScript = default;
-    //射程の最高地点に到達したか
-    private bool isAngle = default;
     #endregion
     /// <summary>
     /// 初期化処理
@@ -50,7 +48,7 @@ public class BallScript : MonoBehaviour
     private void Update()
     {
         //射程範囲内か
-        if (_gunScript.GetPower >= Vector3.Distance(transform.position, _nowShotPosition) && isAngle == false)
+        if (_gunScript.GetPower >= Vector3.Distance(transform.position, _nowShotPosition))
         {
             //毎フレーム弾を移動させる
             transform.position += _shootVelocity * _speed * Time.deltaTime;
@@ -74,8 +72,6 @@ public class BallScript : MonoBehaviour
     /// <param name="shotPosition">発射位置</param>
     public void SetVelocity(Vector3 shotDirections, Vector3 shotPosition)
     {
-        //射程範囲内の初期化
-        isAngle = false;
         //向き設定
         _shootVelocity = shotDirections.normalized;
         //発射位置
@@ -103,13 +99,14 @@ public class BallScript : MonoBehaviour
     /// </summary>
     private void FoolMove()
     {
-        isAngle = true;
         //_shootVelocity を少しずつ変更する
         _shootVelocity = Vector3.Lerp(_shootVelocity, Vector3.down, Time.deltaTime * _tiltSpeed);
+        //移動させる
         transform.position += _shootVelocity * Time.deltaTime * _foolSpeed;
     }
     private void OnCollisionEnter(Collision collision)
     {
+        //床に当たったか
         if (collision.gameObject.tag == "floor")
         {
             //当たった場所を取得
@@ -117,9 +114,13 @@ public class BallScript : MonoBehaviour
             if (paintable != null)
             {
                 ContactPoint contact = collision.GetContact(0);
+                //法線取得
                 Vector3 normal = contact.normal;
+                //ポジション取得
                 Vector3 hitPosition = contact.point;
+                //接線取得
                 Vector3 tangent = Vector3.Cross(normal, Vector3.right).normalized;
+                //エフェクト開始
                 _splashControlScript.StartEffects(hitPosition, normal);
                 if (tangent.sqrMagnitude < 0.01f)
                 {

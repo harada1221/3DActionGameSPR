@@ -22,6 +22,7 @@ public class CameraScript : MonoBehaviour
     #endregion
     private void Start()
     {
+        //プレイヤースクリプト取得
         _playerScript = _player.GetComponent<PlayerScript>();
     }
     /// <summary>

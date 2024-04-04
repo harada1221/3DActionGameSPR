@@ -3,7 +3,6 @@
 *　　原田　智大
 */
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerHpScript : MonoBehaviour
 {
@@ -18,6 +17,8 @@ public class PlayerHpScript : MonoBehaviour
     private float _diverHealTime = 0.125f;
     [SerializeField, Header("ダメージUI")]
     private CanvasGroup _damegeUi = default;
+    [SerializeField, Header("敵インクを踏んでいるときのダメージ上限")]
+    private int _damegeLimit = 40;
     //プレイヤースクリプト
     private PlayerScript _playerScript = default;
     //現在のHP
@@ -26,7 +27,6 @@ public class PlayerHpScript : MonoBehaviour
     private float _damegeCoolTimeCount = default;
     //クールタイムの比較よう
     private float _damegeCoolCheak = default;
-
     public int GetNowHp { get => _nowHp; }
     #endregion
     /// <summary>
@@ -60,13 +60,16 @@ public class PlayerHpScript : MonoBehaviour
         //回復速度を決める
         if (_playerScript.GetNowStatus == PlayerScript.PlayerStatus.Crouch || _playerScript.GetNowStatus == PlayerScript.PlayerStatus.Diver)
         {
+            //潜り状態の回復量
             _damegeCoolCheak = _diverHealTime;
         }
         else
         {
+            //通常状態の回復量
             _damegeCoolCheak = _normalHealTime;
         }
-        if (_playerScript.GetEnemyColor == true && _nowHp >= 40)
+        //敵チームの色か
+        if (_playerScript.GetEnemyColor == true && _nowHp >= _damegeLimit)
         {
             DownNowHp(1);
         }
@@ -87,6 +90,7 @@ public class PlayerHpScript : MonoBehaviour
         _damegeCoolTimeCount = 0;
         //HP減少
         _nowHp = _nowHp - damege;
+        //UI変更
         DamegeUiChage();
     }
     /// <summary>
@@ -103,6 +107,7 @@ public class PlayerHpScript : MonoBehaviour
         }
         //HP回復
         _nowHp += _healValue;
+        //UI変更
         DamegeUiChage();
     }
     /// <summary>
@@ -110,7 +115,9 @@ public class PlayerHpScript : MonoBehaviour
     /// </summary>
     public void HpMaxHeal()
     {
+        //最大値に変更
         _nowHp = _maxHp;
+        //UI変更
         DamegeUiChage();
     }
     /// <summary>
